@@ -1,0 +1,14 @@
+{
+  "name": "compages-reserves",
+  "version": "1.0.0",
+  "description": "A verified, public mirror of the Compages bridge's signed proof-of-reserves snapshots",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "sync": "node sync.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "ethers": "6.17.0"
+  }
+}

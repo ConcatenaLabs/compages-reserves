@@ -1,0 +1,55 @@
+name: mirror
+
+# Every hour, copy any new signed reserve snapshot from the bridge into
+# snapshots/, verified first (see sync.mjs). Needs no credentials anywhere:
+# it reads a public endpoint and commits with this workflow's own token.
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mirror
+  cancel-in-progress: false
+
+env:
+  # The bridge whose history is mirrored.
+  SOURCE: https://sequentiatestnet.com/bridge
+  # The bridge's attestation address: every snapshot must be signed by it.
+  # Until it is set, the mirror does nothing while the bridge publishes no
+  # history, and fails (rather than copying anything unverified) once it does.
+  ATTESTER: SET_ME_TO_THE_ATTESTATION_ADDRESS
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
+      - name: Fetch and verify new snapshots
+        id: sync
+        run: node sync.mjs
+      # Runs even when a later snapshot failed its checks: whatever passed
+      # before it is committed, and the job still reports the failure.
+      - name: Commit
+        if: success() || steps.sync.outcome == 'failure'
+        run: |
+          git add snapshots
+          if git diff --cached --quiet; then
+            echo "nothing new"
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "snapshots: mirror height ${{ steps.sync.outputs.added }}"
+          git push
