@@ -24,7 +24,7 @@ env:
   # The bridge's attestation address: every snapshot must be signed by it.
   # Until it is set, the mirror does nothing while the bridge publishes no
   # history, and fails (rather than copying anything unverified) once it does.
-  ATTESTER: SET_ME_TO_THE_ATTESTATION_ADDRESS
+  ATTESTER: "0x4d66517923cDd6E374969fF68BdedF818415cDfC"
 
 jobs:
   mirror:

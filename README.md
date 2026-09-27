@@ -35,11 +35,10 @@ its own `GITHUB_TOKEN`.
 
 The bridge signs with
 
-**`SET_ME_TO_THE_ATTESTATION_ADDRESS`**
+**`0x4d66517923cDd6E374969fF68BdedF818415cDfC`**
 
-(placeholder until the bridge's attestation key is generated; the same value
-is pinned as `ATTESTER` in `.github/workflows/mirror.yml`, and published in the
-Compages README).
+The same address is pinned as `ATTESTER` in `.github/workflows/mirror.yml`
+and published in the Compages README.
 
 ## Layout
 
